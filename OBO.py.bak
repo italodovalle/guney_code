@@ -2,7 +2,7 @@
 class OBO(object):
 
     def __init__(self, file_name, save_synonyms = False):
-        from . import OboParser
+        import OboParser
         self.g = OboParser.getOboGraph(file_name, save_synonyms)
         self.precalculated_descendants = {}
         self.child_to_parent = None
@@ -19,7 +19,7 @@ class OBO(object):
 
     def get_term_relations(self, v):
         #return self.g.neighbors(v)
-        return [ (u, data['r']) for u, data in self.g[v].items() ]
+        return [ (u, data['r']) for u, data in self.g[v].iteritems() ]
 
     def get_term_relation_dict(self, v):
         return self.g[v]
@@ -44,7 +44,7 @@ class OBO(object):
         """
         Gets all the descendants
         """
-        if id in self.precalculated_descendants:
+        if self.precalculated_descendants.has_key(id):
             return self.precalculated_descendants[id]
         result = set()
         for current_descendant_id in self.g.neighbors(id):
@@ -69,7 +69,7 @@ class OBO(object):
             self.get_descendants(id)
         
         self.child_to_parent = {}
-        for key, values in self.precalculated_descendants.items():
+        for key, values in self.precalculated_descendants.iteritems():
             for value in values:
                self.child_to_parent.setdefault(value, set()).add(key)
 
@@ -83,7 +83,7 @@ class OBO(object):
                continue
             relations = self.g[v]
             while len(relations) > 0:
-               for child, values in relations.items(): # Currently tracing only the last child
+               for child, values in relations.iteritems(): # Currently tracing only the last child
                    if from_ontology_prefix == "*" or child.startswith(from_ontology_prefix): #"HSDL:"):
                      #type = values['r']
                      hsdl_to_hge.setdefault(child, set()).add(v)

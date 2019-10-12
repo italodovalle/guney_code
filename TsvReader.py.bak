@@ -1,5 +1,5 @@
 
-from .FormattedFileProcessor import FormattedFileProcessor
+from FormattedFileProcessor import FormattedFileProcessor
 
 class TsvReader(FormattedFileProcessor):
     """
@@ -50,7 +50,7 @@ class TsvReader(FormattedFileProcessor):
             fields_to_include = [ f.lower() for f in fields_to_include ]
             first_column = fields_to_include[0]
         fields_to_include.remove(first_column) # this will be stored as key
-        columns = dict(list(zip(cols, list(range(len(cols))))))
+        columns = dict(zip(cols, range(len(cols))))
         if merge_inner_values:
             if self.inner_delim is None:
                raise Exception("merge_inner_values requires that inner_delim is defined!")
@@ -67,12 +67,12 @@ class TsvReader(FormattedFileProcessor):
                    new_vals = []
                    if merge_inner_values:
                      for f in fields_to_include:
-                         new_vals.extend([x.strip().strip(self.quotation) for x in vals[columns[f]].split(self.inner_delim)])
+                         new_vals.extend(map(lambda x: x.strip().strip(self.quotation), vals[columns[f]].split(self.inner_delim)))
                    else:
                      new_vals = [vals[columns[f]].strip(self.quotation) for f in fields_to_include]
                    id_to_values.setdefault(id_, []).append(new_vals)
             except:  
-               print(line_prev, line) 
+               print line_prev, line 
                import traceback
                traceback.print_exc()
                break
@@ -80,7 +80,7 @@ class TsvReader(FormattedFileProcessor):
             line = file.readline()
         file.close()
         #print columns, "\n", id_to_values.items()[0]
-        column_to_index = dict(list(zip(fields_to_include, list(range(len(fields_to_include))))))
+        column_to_index = dict(zip(fields_to_include, range(len(fields_to_include))))
         #print "End:", columns
         return column_to_index, id_to_values
 
@@ -103,7 +103,7 @@ class TsvReader(FormattedFileProcessor):
         else:
             fields_to_include = [ f.lower() for f in fields_to_include ]
             first_column = fields_to_include[0]
-        columns = dict(list(zip(cols, list(range(len(cols))))))
+        columns = dict(zip(cols, range(len(cols))))
         #print "Start:", columns
         id_to_value = {}
         i=0
@@ -131,7 +131,7 @@ class TsvReader(FormattedFileProcessor):
                      out_method("%s\n" % "\t".join([ vals[columns[f]] for f in fields_to_include ]))
             except: #Exception, e: 
                #print "In: ", __file__, e, vals
-               print(line_prev, line) 
+               print line_prev, line 
                import traceback
                traceback.print_exc()
             i+=1
@@ -147,7 +147,7 @@ class TsvReader(FormattedFileProcessor):
                for c in cols:
                    if c in fields_to_include:
                      cols2.append(c)
-               columns = dict(list(zip(cols2, list(range(len(cols2))))))
+               columns = dict(zip(cols2, range(len(cols2))))
             #print "End:", columns
             return columns, id_to_value
         else:

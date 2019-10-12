@@ -7,13 +7,13 @@ def main():
     sc = float(sys.argv[1])
     #alist=[1,1,0]
     #alist = [ float(sys.argv[2]), float(sys.argv[3]), float(sys.argv[4]) ]
-    alist = list(map(float, sys.argv[2:]))
+    alist = map(float, sys.argv[2:])
     #print alist
     m, s = calc_mean_and_sigma(alist)
     if s == 0:
-        print("0 variation")
+        print "0 variation"
     else:
-        print("(%.2f - %.2f) / %.2f = %.2f" % ( sc, m, s, (sc - m) / s))
+        print "(%.2f - %.2f) / %.2f = %.2f" % ( sc, m, s, (sc - m) / s)
     return
 
 
@@ -32,7 +32,7 @@ def convert_z_scores_to_p_values(z_scores, one_sided = None):
         p_values = stats.norm.sf(np.abs(z_scores)) 
         p_values *= 2
     elif one_sided == "-":
-        p_values = stats.norm.sf([-x for x in z_scores]) 
+        p_values = stats.norm.sf(map(lambda x: -x, z_scores)) 
     else: #if one_sided == "+":
         p_values = stats.norm.sf(z_scores) 
     return p_values
@@ -64,7 +64,7 @@ def correct_pvalues_for_multiple_testing(pvalues, correction_type = "Benjamini-H
             rank = n - i
             pvalue, index = vals
             new_values.append((n/rank) * pvalue)
-        for i in range(0, int(n)-1): 
+        for i in xrange(0, int(n)-1): 
             if new_values[i] < new_values[i+1]:
                new_values[i+1] = new_values[i]
         for i, vals in enumerate(values):
@@ -157,7 +157,7 @@ def hypergeometric_test(picked_good, picked_all, all_all, all_good):
     N = len(all_all) 
     M = len(all_good) 
     n = len(picked_all) 
-    val = sum(stats.hypergeom.pmf(list(range(k, n+1)), N, M, n)) # was min(n, M) instead of n
+    val = sum(stats.hypergeom.pmf(range(k, n+1), N, M, n)) # was min(n, M) instead of n
     # in stats doc M is N, n is M, N is n
     #M = len(all_all) 
     #n = len(all_good) 
@@ -167,12 +167,12 @@ def hypergeometric_test(picked_good, picked_all, all_all, all_good):
 
 
 def hypergeometric_test_numeric(k, n, N, M):
-    val = sum(stats.hypergeom.pmf(list(range(k, min(n, M)+1)), N, M, n))
+    val = sum(stats.hypergeom.pmf(range(k, min(n, M)+1), N, M, n))
     return val
 
 
 def density_estimation(occurences, possible_values):
-    kde = stats.gaussian_kde(list(map(float, occurences)))
+    kde = stats.gaussian_kde(map(float, occurences))
     p = kde(possible_values)
     return p / sum(p)
 
