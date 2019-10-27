@@ -31,12 +31,12 @@ def convert_p_values_to_z_scores(p_values, size=1000000):
 def convert_z_scores_to_p_values(z_scores, one_sided = None):
     #p_values = 1 - st.norm.cdf(z_scores)
     if one_sided is None:
-	       p_values = stats.norm.sf(np.abs(z_scores))
+        p_values = stats.norm.sf(np.abs(z_scores))
         p_values *= 2
     elif one_sided == "-":
-	       p_values = stats.norm.sf(map(lambda x: -x, z_scores))
+	    p_values = stats.norm.sf(map(lambda x: -x, z_scores))
     else: #if one_sided == "+":
-	       p_values = stats.norm.sf(z_scores)
+	    p_values = stats.norm.sf(z_scores)
     return p_values
 
 
