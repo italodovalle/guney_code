@@ -120,41 +120,41 @@ def jaccard_signed(x_up, x_down, y_up, y_down, costs = [1, 1, 1, 1,]):
 def statistical_test(x, y, test_type="wilcoxon", alternative="two-sided"):
     # test stat, p-val
     if test_type == "t":
-	   stat, pval = np.ravel(stats.ttest_ind(x, y, equal_var=False))
+        stat, pval = np.ravel(stats.ttest_ind(x, y, equal_var=False))
     elif test_type == "wilcoxon": # Requires equal size
-	   stat, pval = np.ravel(stats.wilcoxon(x, y))
+	    stat, pval = np.ravel(stats.wilcoxon(x, y))
     elif test_type == "mannwhitney": # returns one-sided by default
-	   stat, pval = np.ravel(stats.mannwhitneyu(x, y))
+	    stat, pval = np.ravel(stats.mannwhitneyu(x, y))
     elif test_type == "ks":
-	       stat, pval = np.ravel(stats.ks_2samp(x,y))
+	    stat, pval = np.ravel(stats.ks_2samp(x,y))
     else:
-	       raise ValueError("Invalid correlation type!")
+	    raise ValueError("Invalid correlation type!")
     #return stat, pval
     # To convert p-value to one-way, it is inconsistent with R though
     if test_type == "wilcoxon":
-    	stat2 = median(x) - median(y)
-    	if stat2 >= 0:
-    	    if alternative == "greater":
-    		pval = pval / 2
-    	    elif alternative == "less":
-    		pval = 1 - pval / 2
-    	else:
-    	    if alternative == "greater":
-    		          pval = 1 - pval / 2
-    	    elif alternative == "less":
-    		          pval = pval / 2
+        stat2 = median(x) - median(y)
+        if stat2 >= 0:
+            if alternative == "greater":
+                pval = pval / 2
+            elif alternative == "less":
+                pval = 1 - pval / 2
+        else:
+            if alternative == "greater":
+                pval = 1 - pval / 2
+            elif alternative == "less":
+                pval = pval / 2
     elif test_type == "mannwhitney":
-	    stat2 = median(x) - median(y)
-    	if alternative == "two-sided":
-    	    pval = (2 * pval)
-    	elif alternative == "less":
-    	    if stat2 >= 0:
-    		pval = 1 - pval
-    	elif alternative == "greater":
-    	    if stat2 < 0:
-    		pval = 1 - pval
+        stat2 = median(x) - median(y)
+        if alternative == "two-sided":
+            pval = (2 * pval)
+        elif alternative == "less":
+            if stat2 >= 0:
+                pval = 1 - pval
+        elif alternative == "greater":
+            if stat2 < 0:
+                pval = 1 - pval
     elif alternative != "two-sided":
-	       raise ValueError("Not implemented!")
+        raise ValueError("Not implemented!")
     return stat, pval
 
 
@@ -210,7 +210,7 @@ def ksrepo_score(golds, candidates):
     candidates = np.array(candidates)
     idx = np.in1d(candidates, golds)
     if np.sum(idx) == 0: # No match
-	   return np.nan
+        return np.nan
     ranks = np.arange(1.0, len(candidates)+1)
     V = ranks[idx]
     t = len(V)
@@ -255,7 +255,7 @@ def ks_score(golds, candidates, N=None):
     	    max_score = score
     	else:
     	    if abs(score) > abs(max_score):
-    		max_score = score
+                max_score = score
     return max_score
 
 
