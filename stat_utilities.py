@@ -68,7 +68,7 @@ def correct_pvalues_for_multiple_testing(pvalues, correction_type = "Benjamini-H
     	    new_values.append((n/rank) * pvalue)
     	for i in xrange(0, int(n)-1):
     	    if new_values[i] < new_values[i+1]:
-    		new_values[i+1] = new_values[i]
+    		          new_values[i+1] = new_values[i]
     	for i, vals in enumerate(values):
     	    pvalue, index = vals
     	    new_pvalues[index] = new_values[i]
