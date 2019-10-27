@@ -120,7 +120,7 @@ def jaccard_signed(x_up, x_down, y_up, y_down, costs = [1, 1, 1, 1,]):
 def statistical_test(x, y, test_type="wilcoxon", alternative="two-sided"):
     # test stat, p-val
     if test_type == "t":
-	       stat, pval = np.ravel(stats.ttest_ind(x, y, equal_var=False))
+	   stat, pval = np.ravel(stats.ttest_ind(x, y, equal_var=False))
     elif test_type == "wilcoxon": # Requires equal size
 	   stat, pval = np.ravel(stats.wilcoxon(x, y))
     elif test_type == "mannwhitney": # returns one-sided by default
