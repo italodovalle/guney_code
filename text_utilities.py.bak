@@ -2,7 +2,7 @@
 try:
     from toolbox.external.negex import negex #sortRules, negTagger
 except:
-    print("Import error: Negex. Using keyword matching instead")
+    print "Import error: Negex. Using keyword matching instead"
 
 
 KEYWORDS_NEGATIVE = [ " not ", " no ", " except ", " exception ", " inappropriate ", " without ", " absence " ]

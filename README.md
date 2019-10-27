@@ -29,27 +29,19 @@ and [network_utilities.py](network_utilities.py) contains methods related to net
 
 ## Parsers
 
-Parsers available for the APIs / files provided in the following resources (note that they are specific to retrieving a certain type of information --often related to pharmacological analyses-- and might not be up-to-date):
+Parsers available for the following resources:
 
-- [AmiGO](https://amigo.geneontology.org)
-- [ChEMBL](https://www.ebi.ac.uk/chembl)
 - [Clinical trials](http://clinicaltrials.gov)
 - [CMAP](https://www.broadinstitute.org/cmap)
-- [COMPARTMENTS](https://compartments.jensenlab.org)
 - [CTD](http://ctdbase.org)
 - [DailyMed](http://dailymed.nlm.nih.gov)
-- [DisGeNET](http://disgenet.org/)
-- [Disease Ontology](http://disease-ontology.org/)
 - [DrugBank](http://www.drugbank.ca)
 - [Drugrepurposing.info](http://drugrepurposing.info)
 - [GAD](https://geneticassociationdb.nih.gov)
 - [GeneCards](http://www.genecards.org)
 - [GDSC](http://www.cancerrxgene.org)
 - [GO](http://geneontology.org)
-- [Hetionet](https://github.com/dhimmel/hetionet)
-- [HPA](https://www.proteinatlas.org/)
-- [IID](http://iid.ophid.utoronto.ca/iid/)
-- [KEGG API](http://www.genome.jp/kegg)
+- [KEGG API](www.genome.jp/kegg)
 - [KEGG Brite](http://www.genome.jp/kegg/brite.html)
 - [LabeledIn](http://www.ncbi.nlm.nih.gov/pubmed/25220766)
 - [LINCS API](http://www.lincsproject.org)
@@ -57,12 +49,10 @@ Parsers available for the APIs / files provided in the following resources (note
 - [Metab2Mesh](http://metab2mesh.ncibi.org)
 - [MeSH](http://www.ncbi.nlm.nih.gov/mesh)
 - [MSigDB](http://www.broadinstitute.org/msigdb)
-- [MyChem.info](http://mychem.info/)
 - [NCBI Gene](http://www.ncbi.nlm.nih.gov/gene)
 - [NDFRT API](https://rxnav.nlm.nih.gov/NdfrtAPIs.html)
 - [OpenFDA API](https://open.fda.gov)
 - [Orphanet](http://www.orpha.net)
-- [OpenPhacts](https://www.openphacts.org/)
 - [OMIM](http://www.omim.org)
 - [SIDER](http://sideeffects.embl.de)
 - [SNOMEDCT](https://www.nlm.nih.gov/healthit/snomedct)
