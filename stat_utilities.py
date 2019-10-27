@@ -11,9 +11,9 @@ def main():
     #print alist
     m, s = calc_mean_and_sigma(alist)
     if s == 0:
-        print "0 variation"
+        print ("0 variation")
     else:
-        print "(%.2f - %.2f) / %.2f = %.2f" % ( sc, m, s, (sc - m) / s)
+        print ("(%.2f - %.2f) / %.2f = %.2f" % ( sc, m, s, (sc - m) / s))
     return
 
 
@@ -29,18 +29,18 @@ def convert_p_values_to_z_scores(p_values, size=1000000):
 def convert_z_scores_to_p_values(z_scores, one_sided = None):
     #p_values = 1 - st.norm.cdf(z_scores)
     if one_sided is None:
-	p_values = stats.norm.sf(np.abs(z_scores)) 
+	p_values = stats.norm.sf(np.abs(z_scores))
         p_values *= 2
     elif one_sided == "-":
-	p_values = stats.norm.sf(map(lambda x: -x, z_scores)) 
+	p_values = stats.norm.sf(map(lambda x: -x, z_scores))
     else: #if one_sided == "+":
-	p_values = stats.norm.sf(z_scores) 
+	p_values = stats.norm.sf(z_scores)
     return p_values
 
 
 def correct_pvalues_for_multiple_testing(pvalues, correction_type = "Benjamini-Hochberg"):
     """
-    consistent with R - print correct_pvalues_for_multiple_testing([0.0, 0.01, 0.029, 0.03, 0.031, 0.05, 0.069, 0.07, 0.071, 0.09, 0.1]) 
+    consistent with R - print correct_pvalues_for_multiple_testing([0.0, 0.01, 0.029, 0.03, 0.031, 0.05, 0.069, 0.07, 0.071, 0.09, 0.1])
     """
     from numpy import array, empty
     pvalues = array(pvalues)
@@ -64,7 +64,7 @@ def correct_pvalues_for_multiple_testing(pvalues, correction_type = "Benjamini-H
 	    rank = n - i
 	    pvalue, index = vals
 	    new_values.append((n/rank) * pvalue)
-	for i in xrange(0, int(n)-1): 
+	for i in xrange(0, int(n)-1):
 	    if new_values[i] < new_values[i+1]:
 		new_values[i+1] = new_values[i]
 	for i, vals in enumerate(values):
@@ -110,7 +110,7 @@ def jaccard_max(x, y):
 
 
 def jaccard_signed(x_up, x_down, y_up, y_down, costs = [1, 1, 1, 1,]):
-    j = costs[0] * len(x_up & y_up) + costs[3] * len(x_down & y_down) 
+    j = costs[0] * len(x_up & y_up) + costs[3] * len(x_down & y_down)
     j -= costs[1] * len(x_up & y_down) + costs[2] * len(x_down & y_up)
     return j / 2.0
 
@@ -146,7 +146,7 @@ def statistical_test(x, y, test_type="wilcoxon", alternative="two-sided"):
 	if alternative == "two-sided":
 	    pval = (2 * pval)
 	elif alternative == "less":
-	    if stat2 >= 0: 
+	    if stat2 >= 0:
 		pval = 1 - pval
 	elif alternative == "greater":
 	    if stat2 < 0:
@@ -157,15 +157,15 @@ def statistical_test(x, y, test_type="wilcoxon", alternative="two-sided"):
 
 
 def hypergeometric_test(picked_good, picked_all, all_all, all_good):
-    k = len(picked_good) 
-    N = len(all_all) 
-    M = len(all_good) 
-    n = len(picked_all) 
+    k = len(picked_good)
+    N = len(all_all)
+    M = len(all_good)
+    n = len(picked_all)
     val = sum(stats.hypergeom.pmf(range(k, n+1), N, M, n)) # was min(n, M) instead of n
     # in stats doc M is N, n is M, N is n
-    #M = len(all_all) 
-    #n = len(all_good) 
-    #N = len(picked_all) 
+    #M = len(all_all)
+    #n = len(all_good)
+    #N = len(picked_all)
     #val = sum(stats.hypergeom.pmf(range(k,min(N,n)+1), M, n, N))
     return val
 
@@ -183,7 +183,7 @@ def density_estimation(occurences, possible_values):
 
 def fisher_exact(tp, fp, fn, tn, alternative="two-sided"):
     """
-    alternative: two-sided | greater | less 
+    alternative: two-sided | greater | less
     """
     oddsratio, pvalue = stats.fisher_exact([[tp, fp], [fn, tn]], alternative)
     return oddsratio, pvalue
@@ -200,7 +200,7 @@ def combine_pvalues(pvalues):
 
 def ksrepo_score(golds, candidates):
     """
-    Given a ranked/prioritized candidates list (gene/pathway set), 
+    Given a ranked/prioritized candidates list (gene/pathway set),
     finds the ks running sum score based on the
     ranks of the matches of candidates on golds
     Python implementation of ks_simple on https://github.com/adam-sam-brown/ksRepo/blob/master/R/ksRepo.R
@@ -226,10 +226,10 @@ def ksrepo_score(golds, candidates):
 
 def ks_score(golds, candidates, N=None):
     """
-    Given a ranked golds set (genes / pathways), 
+    Given a ranked golds set (genes / pathways),
     calculates KS score as proposed by Mootha et al.
     for the candidate list
-    (~max difference between cumulative distributions 
+    (~max difference between cumulative distributions
     of the sample and expected random walk)
     """
     candidates = set(candidates)
@@ -246,9 +246,9 @@ def ks_score(golds, candidates, N=None):
 	raise ValueError("Gold set is smaller than candidate set")
     for gold in golds:
 	if gold in candidates:
-	    score += val_in 
+	    score += val_in
 	else:
-	    score += val_out 
+	    score += val_out
 	if max_score is None:
 	    max_score = score
 	else:
@@ -259,4 +259,3 @@ def ks_score(golds, candidates, N=None):
 
 if __name__ == "__main__":
     main()
-
