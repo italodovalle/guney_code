@@ -7,7 +7,7 @@ def main():
     sc = float(sys.argv[1])
     #alist=[1,1,0]
     #alist = [ float(sys.argv[2]), float(sys.argv[3]), float(sys.argv[4]) ]
-    alist = list(map(float, sys.argv[2:]))
+    alist = map(float, sys.argv[2:])
     #print alist
     m, s = calc_mean_and_sigma(alist)
     if s == 0:
@@ -29,12 +29,12 @@ def convert_p_values_to_z_scores(p_values, size=1000000):
 def convert_z_scores_to_p_values(z_scores, one_sided = None):
     #p_values = 1 - st.norm.cdf(z_scores)
     if one_sided is None:
-        p_values = stats.norm.sf(np.abs(z_scores))
+	p_values = stats.norm.sf(np.abs(z_scores))
         p_values *= 2
     elif one_sided == "-":
-        p_values = stats.norm.sf([-x for x in z_scores])
+	p_values = stats.norm.sf(map(lambda x: -x, z_scores))
     else: #if one_sided == "+":
-        p_values = stats.norm.sf(z_scores)
+	p_values = stats.norm.sf(z_scores)
     return p_values
 
 
@@ -48,33 +48,33 @@ def correct_pvalues_for_multiple_testing(pvalues, correction_type = "Benjamini-H
     new_pvalues = empty(n)
     n = float(n)
     if correction_type == "Bonferroni":
-        new_pvalues = n * pvalues
+	new_pvalues = n * pvalues
     elif correction_type == "Bonferroni-Holm":
-        values = [ (pvalue, i) for i, pvalue in enumerate(pvalues) ]
-        values.sort()
-        for rank, vals in enumerate(values):
-            pvalue, i = vals
-            new_pvalues[i] = (n-rank) * pvalue
+	values = [ (pvalue, i) for i, pvalue in enumerate(pvalues) ]
+	values.sort()
+	for rank, vals in enumerate(values):
+	    pvalue, i = vals
+	    new_pvalues[i] = (n-rank) * pvalue
     elif correction_type == "Benjamini-Hochberg":
-        values = [ (pvalue, i) for i, pvalue in enumerate(pvalues) ]
-        values.sort()
-        values.reverse()
-        new_values = []
-        for i, vals in enumerate(values):
-            rank = n - i
-            pvalue, index = vals
-            new_values.append((n/rank) * pvalue)
-        for i in range(0, int(n)-1):
-            if new_values[i] < new_values[i+1]:
-               new_values[i+1] = new_values[i]
-        for i, vals in enumerate(values):
-            pvalue, index = vals
-            new_pvalues[index] = new_values[i]
-        #for rank, vals in enumerate(values):
-            #pvalue, i = vals
-            #new_pvalues[i] = (n/(rank+1)) * pvalue
+	values = [ (pvalue, i) for i, pvalue in enumerate(pvalues) ]
+	values.sort()
+	values.reverse()
+	new_values = []
+	for i, vals in enumerate(values):
+	    rank = n - i
+	    pvalue, index = vals
+	    new_values.append((n/rank) * pvalue)
+	for i in xrange(0, int(n)-1):
+	    if new_values[i] < new_values[i+1]:
+		new_values[i+1] = new_values[i]
+	for i, vals in enumerate(values):
+	    pvalue, index = vals
+	    new_pvalues[index] = new_values[i]
+	#for rank, vals in enumerate(values):
+	    #pvalue, i = vals
+	    #new_pvalues[i] = (n/(rank+1)) * pvalue
     else:
-        raise ValueError("Unknown correction type: " + correction_type)
+	raise ValueError("Unknown correction type: " + correction_type)
     return new_pvalues
 
 
@@ -93,16 +93,20 @@ def sigma(x):
 def correlation(x, y, cor_type="pearson"):
     # coef, p-val
     if cor_type == "pearson":
-        coef, pval = np.ravel(stats.pearsonr(x, y))
+	coef, pval = np.ravel(stats.pearsonr(x, y))
     elif cor_type == "spearman":
-        coef, pval = np.ravel(stats.spearmanr(x, y))
+	coef, pval = np.ravel(stats.spearmanr(x, y))
     else:
-        raise ValueError("Invalid correlation type!")
+	raise ValueError("Invalid correlation type!")
     return coef, pval
 
 
 def jaccard(x, y):
-    return len(x & y) / len(x | y)
+    return 1.0 * len(x & y) / len(x | y)
+
+
+def jaccard_max(x, y):
+    return 1.0 * len(x & y) / max(map(len, [x, y]))
 
 
 def jaccard_signed(x_up, x_down, y_up, y_down, costs = [1, 1, 1, 1,]):
@@ -114,29 +118,29 @@ def jaccard_signed(x_up, x_down, y_up, y_down, costs = [1, 1, 1, 1,]):
 def statistical_test(x, y, test_type="wilcoxon", alternative="two-sided"):
     # test stat, p-val
     if test_type == "t":
-        stat, pval = np.ravel(stats.ttest_ind(x, y, equal_var=False))
+	stat, pval = np.ravel(stats.ttest_ind(x, y, equal_var=False))
     elif test_type == "wilcoxon": # Requires equal size
-        stat, pval = np.ravel(stats.wilcoxon(x, y))
+	stat, pval = np.ravel(stats.wilcoxon(x, y))
     elif test_type == "mannwhitney": # returns one-sided by default
-        stat, pval = np.ravel(stats.mannwhitneyu(x, y))
+	stat, pval = np.ravel(stats.mannwhitneyu(x, y))
     elif test_type == "ks":
-        stat, pval = np.ravel(stats.ks_2samp(x,y))
+	stat, pval = np.ravel(stats.ks_2samp(x,y))
     else:
-        raise ValueError("Invalid correlation type!")
+	raise ValueError("Invalid correlation type!")
     #return stat, pval
     # To convert p-value to one-way, it is inconsistent with R though
     if test_type == "wilcoxon":
-        stat2 = median(x) - median(y)
-        if stat2 >= 0:
-            if alternative == "greater":
-               pval = pval / 2
-            elif alternative == "less":
-               pval = 1 - pval / 2
-        else:
-            if alternative == "greater":
-               pval = 1 - pval / 2
-            elif alternative == "less":
-               pval = pval / 2
+	stat2 = median(x) - median(y)
+	if stat2 >= 0:
+	    if alternative == "greater":
+		pval = pval / 2
+	    elif alternative == "less":
+		pval = 1 - pval / 2
+	else:
+	    if alternative == "greater":
+		pval = 1 - pval / 2
+	    elif alternative == "less":
+		pval = pval / 2
     elif test_type == "mannwhitney":
 	stat2 = median(x) - median(y)
 	if alternative == "two-sided":
@@ -148,7 +152,7 @@ def statistical_test(x, y, test_type="wilcoxon", alternative="two-sided"):
 	    if stat2 < 0:
 		pval = 1 - pval
     elif alternative != "two-sided":
-        raise ValueError("Not implemented!")
+	raise ValueError("Not implemented!")
     return stat, pval
 
 
@@ -157,7 +161,7 @@ def hypergeometric_test(picked_good, picked_all, all_all, all_good):
     N = len(all_all)
     M = len(all_good)
     n = len(picked_all)
-    val = sum(stats.hypergeom.pmf(list(range(k, n+1)), N, M, n)) # was min(n, M) instead of n
+    val = sum(stats.hypergeom.pmf(range(k, n+1), N, M, n)) # was min(n, M) instead of n
     # in stats doc M is N, n is M, N is n
     #M = len(all_all)
     #n = len(all_good)
@@ -167,12 +171,12 @@ def hypergeometric_test(picked_good, picked_all, all_all, all_good):
 
 
 def hypergeometric_test_numeric(k, n, N, M):
-    val = sum(stats.hypergeom.pmf(list(range(k, min(n, M)+1)), N, M, n))
+    val = sum(stats.hypergeom.pmf(range(k, min(n, M)+1), N, M, n))
     return val
 
 
 def density_estimation(occurences, possible_values):
-    kde = stats.gaussian_kde(list(map(float, occurences)))
+    kde = stats.gaussian_kde(map(float, occurences))
     p = kde(possible_values)
     return p / sum(p)
 
@@ -189,6 +193,11 @@ def rank(a):
     return stats.rankdata(a)
 
 
+def combine_pvalues(pvalues):
+    stat, pval = stats.combine_pvalues(pvalues, method='fisher', weights=None)
+    return pval
+
+
 def ksrepo_score(golds, candidates):
     """
     Given a ranked/prioritized candidates list (gene/pathway set),
@@ -199,7 +208,7 @@ def ksrepo_score(golds, candidates):
     candidates = np.array(candidates)
     idx = np.in1d(candidates, golds)
     if np.sum(idx) == 0: # No match
-        return np.nan
+	return np.nan
     ranks = np.arange(1.0, len(candidates)+1)
     V = ranks[idx]
     t = len(V)
@@ -209,9 +218,9 @@ def ksrepo_score(golds, candidates):
     a = np.max(j/t - V/n)
     b = np.max(V/n - (j-1)/t)
     if a > b:
-        ks = a
+	ks = a
     else:
-        ks = -b
+	ks = -b
     return ks
 
 
@@ -227,14 +236,14 @@ def ks_score(golds, candidates, N=None):
     score = 0
     max_score = None
     if N is None:
-        n = len(golds)
+	n = len(golds)
     else:
-        n = N
+	n = N
     g = float(len(candidates))
     val_in = np.sqrt((n-g)/g)
     val_out = -np.sqrt(g/(n-g))
     if n <= g:
-        raise ValueError("Gold set is smaller than candidate set")
+	raise ValueError("Gold set is smaller than candidate set")
     for gold in golds:
 	if gold in candidates:
 	    score += val_in
